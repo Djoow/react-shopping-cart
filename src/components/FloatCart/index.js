@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 
 import { connect } from 'react-redux';
 import { loadCart, removeProduct, changeProductQuantity } from '../../services/cart/actions';
@@ -8,6 +9,7 @@ import CartProduct from './CartProduct';
 import { formatPrice } from '../../services/util';
 
 import './style.scss';
+import moment from 'moment';
 
 class FloatCart extends Component {
   static propTypes = {
@@ -105,16 +107,16 @@ class FloatCart extends Component {
       this.removeProduct(product);
     }
     updateCart(cartProducts);
-  }
+  };
 
   render() {
     const { cartTotal, cartProducts, removeProduct, changeProductQuantity } = this.props;
 
-    const products = cartProducts.map(p => {
+    const products = _.map(cartProducts, (p => {
       return (
         <CartProduct product={p} removeProduct={removeProduct} changeProductQuantity={changeProductQuantity} key={p.id} />
       );
-    });
+    }));
 
     let classes = ['float-cart'];
 
@@ -146,6 +148,7 @@ class FloatCart extends Component {
 
         <div className="float-cart__content">
           <div className="float-cart__header">
+            <span className="date">{moment().format("DD MMM YYYY HH:mm")}</span>
             <span className="bag">
               <span className="bag__quantity">{cartTotal.productQuantity}</span>
             </span>
