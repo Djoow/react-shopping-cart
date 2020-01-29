@@ -5,7 +5,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   mode: 'production',
   optimization: {
-    minimize: false,
     usedExports: false,
     sideEffects: false
   },
