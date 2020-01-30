@@ -1,13 +1,13 @@
 const path = require('path');
+const glob = require('glob');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const PurgecssPlugin = require('purgecss-webpack-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'production',
-  optimization: {
-    usedExports: false,
-    sideEffects: false
-  },
   context: path.join(__dirname, './src'),
   entry: './index.jsx',
   output: {
@@ -23,7 +23,7 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             presets: [
-              "@babel/env",
+              ["@babel/env", { modules: false }],
               "@babel/react",
             ],
             plugins: [
@@ -35,7 +35,7 @@ module.exports = {
       {
         test: /\.s([ac])ss$/,
         use: [
-          'style-loader',
+          MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: {
@@ -53,10 +53,10 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
       {
-        test: /\.(png|jpg)$/i,
+        test: /\.(png|jpg|webp)$/i,
         use: [
           {
             loader: 'url-loader',
@@ -73,6 +73,17 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: '../public/index.html',
       favicon: '../public/favicon.ico',
+    }),
+    new PurgecssPlugin({
+      paths: glob.sync(`${path.join(__dirname, './src')}/**/*`,  { nodir: true }),
+    }),
+    new OptimizeCssAssetsPlugin(),
+    new CompressionPlugin({
+      filename: '[path].br',
+      algorithm: 'brotliCompress',
+      test: /\.(js|css|html)$/,
+      compressionOptions: { level: 11 },
+      minRatio: 0.8,
     }),
   ],
   resolve: {
