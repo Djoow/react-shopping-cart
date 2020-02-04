@@ -1,18 +1,27 @@
-import React from 'react';
+import React, { Suspense } from 'react';
+import Loader from '../Loader';
 
-import Navbar from '../Navbar';
-import Shelf from '../Shelf';
-import Filter from '../Shelf/Filter';
-import FloatCart from '../FloatCart';
+const Navbar = React.lazy(() => import(/* webpackChunkName: 'preload.navbar' */ '../Navbar'));
+const Shelf = React.lazy(() => import(/* webpackChunkName: 'preload.shelf' */ '../Shelf'));
+const Filter = React.lazy(() => import(/* webpackChunkName: 'prefetch.filter' */ '../Shelf/Filter'));
+const FloatCart = React.lazy(() => import(/* webpackChunkName: 'prefetch.float-cart' */'../FloatCart'));
 
 const App = () => (
   <React.Fragment>
-    <Navbar />
-    <main>
-      <Filter />
-      <Shelf />
-    </main>
-    <FloatCart />
+    <Suspense fallback={<Loader/>}>
+      <Navbar />
+    </Suspense>
+      <main>
+        <Suspense fallback={<Loader/>}>
+          <Filter />
+        </Suspense>
+        <Suspense fallback={<Loader/>}>
+          <Shelf />
+        </Suspense>
+      </main>
+    <Suspense fallback={<Loader/>}>
+      <FloatCart />
+    </Suspense>
   </React.Fragment>
 );
 
